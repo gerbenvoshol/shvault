@@ -37,8 +37,12 @@ Examples:
   
   You can also append a string or password to a vault from stdin
   printf "MyPassword" | ./shvault_static -a MySecretPassword
-  
-  Run as command : Last but not least you can store short command scripts and execute
+
+  Use in authentication script
+  some_application -username=myuser -password=$(./shvault_static -s MySecretPassword)
+
+  Run as command :
+  Last but not least you can store short command scripts and execute
   the vaulted string content as command(s). This is practical if you need to put commands
   in scripts that have sensitive strings or passwords in plain text. This will hide those
   strings or commands from the script.
