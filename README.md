@@ -6,7 +6,7 @@ CLI secure password vault using SQLcipher
 
 ```
 $ git clone https://github.com/gerbenvoshol/shvault.git
-$ cd pwvlt
+$ cd shvault
 $ make
 $ make install
 ```
