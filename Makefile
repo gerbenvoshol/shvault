@@ -2,7 +2,7 @@
 CC = gcc
 CFLAGS = -Wall -DSQLITE_HAS_CODEC
 LDFLAGS_STATIC = /usr/lib/x86_64-linux-gnu/libc.a /usr/lib/x86_64-linux-gnu/libcrypto.a  /usr/lib/x86_64-linux-gnu/libssl.a -static
-LDFLAGS_DYNAMIC = -lcrypto
+LDFLAGS_DYNAMIC = -lcrypto -lssl -ldl
 
 # Source files
 SOURCES = main.c sqlite3.c libtct.c libstr.c
