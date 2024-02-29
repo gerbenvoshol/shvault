@@ -1,7 +1,7 @@
 # Compiler settings
 CC = gcc
 CFLAGS = -Wall -DSQLITE_HAS_CODEC
-LDFLAGS_STATIC = /usr/lib/x86_64-linux-gnu/libcrypto.a
+LDFLAGS_STATIC = /usr/lib/x86_64-linux-gnu/libc.a /usr/lib/x86_64-linux-gnu/libcrypto.a  /usr/lib/x86_64-linux-gnu/libssl.a -static
 LDFLAGS_DYNAMIC = -lcrypto
 
 # Source files
