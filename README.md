@@ -69,4 +69,4 @@ This program is distributed under the unlicense License. See the LICENSE file fo
 
 # Disclaimer
 
-This software is provided "AS IS", without warranty of any kind. Always verify the results with official Illumina software or consult with a qualified professional to interpret the data.
+This software is provided "AS IS", without warranty of any kind.
