@@ -51,9 +51,22 @@ Examples:
   
   Safely store login scripts with hard coded passwords.
   Content of phrase.sh
+
   #!/bin/bash
   echo "{{ 1 }} {{ 2 }}!"
   
   ./shvault_static -a MySecretPhrase < phrase.sh
   ./shvault_static -c MySecretPhrase -f 1:Hello -f 2:World
 ```
+
+# Contributing
+
+Contributions to enhance or extend the functionality of this program are welcome. Please feel free to fork the repository and submit pull requests.
+
+# License
+
+This program is distributed under the unlicense License. See the LICENSE file for more details.
+
+# Disclaimer
+
+This software is provided "AS IS", without warranty of any kind. Always verify the results with official Illumina software or consult with a qualified professional to interpret the data.
