@@ -5,10 +5,16 @@ CLI secure password vault using SQLcipher
 # Build & Install
 
 ```
-$ git clone https://github.com/gerbenvoshol/shvault.git
-$ cd shvault
-$ make
-$ make install
+git clone https://github.com/gerbenvoshol/shvault.git
+cd shvault
+make
+make install
+```
+
+### Optionally perform unit tests
+
+```
+make test
 ```
 
 # Command syntax :
