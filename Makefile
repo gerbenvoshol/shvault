@@ -43,3 +43,28 @@ install: all
 # Clean Target
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE_STATIC) $(EXECUTABLE_DYNAMIC)
+
+test:
+	# Test creating a new database and inserting an entry
+	test "$(shell echo -n testvalue | ./shvault_static -v test.db -p testpassword -a testkey; echo $$?)" = "0"
+	# Test searching for the inserted entry
+	test "$(shell ./shvault_static -v test.db -p testpassword -s testkey)" = "testvalue"
+	# Test updating an entry
+	test "$(shell echo -n updatedvalue | ./shvault_static -v test.db -p testpassword -r testkey; echo $$?)" = "0"
+	# Verify the update
+	test "$(shell ./shvault_static -v test.db -p testpassword -s testkey)" = "updatedvalue"
+	# Test deleting the entry
+	test "$(shell ./shvault_static -v test.db -p testpassword -e testkey; echo $$?)" = "0"
+	# Verify deletion
+	test "$(shell ./shvault_static -v test.db -p testpassword -s testkey; echo $$?)" = "1"
+	# Test rekeying the database
+	test "$(shell ./shvault_static -v test.db -p testpassword -k newtestpassword; echo $$?)" = "0"
+	# Verify rekey
+	test "$(shell ./shvault_static -v test.db -p newtestpassword -l; echo $$?)" = "0"
+	# Test inserting a command
+	test "$(shell echo -n "date -I" | ./shvault_static -v test.db -p newtestpassword -a testcommand; echo $$?)" = "0"
+	# Test executing command
+	test "$(shell ./shvault_static -v test.db -p newtestpassword -c testcommand)" = "$(shell date -I)"
+	# Clean up
+	rm -f test.db
+	@echo "ALL TESTS OK"
