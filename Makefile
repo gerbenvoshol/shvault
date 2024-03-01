@@ -44,7 +44,7 @@ install: all
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE_STATIC) $(EXECUTABLE_DYNAMIC)
 
-test:
+test: shvault_static
 	# Test creating a new database and inserting an entry
 	test "$(shell echo -n testvalue | ./shvault_static -v test.db -p testpassword -a testkey; echo $$?)" = "0"
 	# Test searching for the inserted entry
