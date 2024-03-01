@@ -14,6 +14,7 @@
 // Function prototypes
 static int callback(void *NotUsed, int argc, char **argv, char **azColName);
 int open_database(sqlite3 **db, const char* dbPath, const char* password);
+int rekey_database(sqlite3 *db, const char* password);
 int create_table(sqlite3 *db);
 int insert_entry(sqlite3 *db, const char *key, const char *value);
 char* search_entry(sqlite3 *db, const char *key);
@@ -33,7 +34,9 @@ int main(int argc, char **argv) {
     bool appendFlag = false, listFlag = false, eraseFlag = false;
     bool searchFlag = false, execFlag = false, replaceFlag = false;
     bool inputFlag = false, findFlag = false, nanoFlag = false;
+    bool rekeyFlag = false, stdinFlag = false;
     char *key = NULL;
+    char *rekey = NULL;
     char *value = NULL;
     int rc;
 
@@ -43,7 +46,7 @@ int main(int argc, char **argv) {
     int N = 0;
 
     // Use getopt to parse command line options
-    while ((opt = getopt(argc, argv, "scqf:arev:p:lnh")) != -1) {
+    while ((opt = getopt(argc, argv, "scqf:arev:p:lnk:h")) != -1) {
         switch (opt) {
             case 's':
                 // Option for showing entries
@@ -101,8 +104,13 @@ int main(int argc, char **argv) {
                 listFlag = true;
                 break;
             case 'n':
-                // Option for suing nanoID as a key
+                // Option for using nanoID as a key
                 nanoFlag = true;
+                break;
+            case 'k':
+                // Option for rekeying the database
+                rekeyFlag = true;
+                rekey = optarg;
                 break;
             case 'h':
                 // Option for showing help
@@ -128,6 +136,7 @@ int main(int argc, char **argv) {
             value = argv[optind + 1]; // Get the value if provided
         } else if (!searchFlag && !execFlag) {
             // If value is not provided, read from stdin
+            stdinFlag = true;
             if (inputFlag) {
                 value = read_stdin("Enter value: ");
             } else {
@@ -143,15 +152,16 @@ int main(int argc, char **argv) {
                 return 1;
             }
             value = argv[optind + 1]; // Get the value if provided
-        } else if (!searchFlag && !execFlag) {
+        } else if (appendFlag) {
             // If value is not provided, read from stdin
+            stdinFlag = true;
             if (inputFlag) {
                 value = read_stdin("Enter value: ");
             } else {
                 value = read_stdin(NULL);
             }
         }
-    } else if (!listFlag) {
+    } else if (!listFlag && !rekeyFlag) {
         fprintf(stderr, "Key not provided\n");
         print_help(argv[0]);
         return 1;
@@ -170,6 +180,10 @@ int main(int argc, char **argv) {
             rc = open_database(&db, dbPath, password);
             memset(password, '\0', strlen(password));
         }
+    }
+
+    if (rekeyFlag) {
+        rekey_database(db, rekey);
     }
 
     if (!(sqlite3_exec(db, "SELECT count(*) FROM sqlite_master;", NULL, NULL, NULL) == SQLITE_OK)) {
@@ -249,7 +263,7 @@ int main(int argc, char **argv) {
         free(key);
     }
 
-    if (value) {
+    if (value && stdinFlag) {
         free(value);
     }
 
@@ -271,6 +285,8 @@ void print_help(char *program) {
     printf("  -q             Type vault entry using prompt\n");
     printf("  -f             Find and replace for vault templates using the following format find:replace\n");
     printf("  -l             List all entries\n");
+    printf("  -n             Generate a NanoID thet can be used as key\n");
+    printf("  -k <password>  Provide a new password for the database\n");
     printf("  -h             Show this help message\n");
     printf("\nExamples:\n");
     printf("  export SHVAULT_PASSWORD=secret       Set 'secret' as the password for the database\n");
@@ -346,6 +362,30 @@ int open_database(sqlite3 **db, const char* dbPath, const char* password) {
     return connect;
 }
 
+/**
+ * Change the key on an existing encrypted database
+ * 
+ * @param db A pointer to the open SQLite database.
+ * @param password The password used to encrypt the database.
+ */
+int rekey_database(sqlite3 *db, const char* password) {
+    char *errorMessage = NULL;
+    int rc;
+
+    // Encrypt the database with the given password
+    char *pragmaKey = sqlite3_mprintf("PRAGMA rekey = '%q';", password);
+    rc = sqlite3_exec(db, pragmaKey, NULL, NULL, &errorMessage);
+    if (rc != SQLITE_OK) {
+        fprintf(stderr, "Failed to encrypt database: %s\n", errorMessage);
+        sqlite3_free(errorMessage);
+        sqlite3_free(pragmaKey);
+        sqlite3_close(db); // Ensure the database is closed on failure
+        return 1;
+    }
+    sqlite3_free(pragmaKey);
+
+    return rc;
+}
 
 /**
  * Searches for an entry in the database by key and returns the encrypted value.
