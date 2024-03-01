@@ -285,7 +285,7 @@ void print_help(char *program) {
     printf("  -q             Type vault entry using prompt\n");
     printf("  -f             Find and replace for vault templates using the following format find:replace\n");
     printf("  -l             List all entries\n");
-    printf("  -n             Generate a NanoID thet can be used as key\n");
+    printf("  -n             Generate a NanoID which can be used as key\n");
     printf("  -k <password>  Provide a new password for the database\n");
     printf("  -h             Show this help message\n");
     printf("\nExamples:\n");
