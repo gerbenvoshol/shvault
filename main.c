@@ -229,7 +229,7 @@ int main(int argc, char **argv) {
 
     if (searchFlag && key != NULL) {
         if (!(value = search_entry(db, key))) {
-            fprintf(stderr, "Failed to find entry %s\n", key);
+            fprintf(stderr, "Failed to find key %s\n", key);
             return 1;
         } else {
             //printf("Key: %s, Value: %s\n", key, value);
@@ -239,7 +239,7 @@ int main(int argc, char **argv) {
 
     if (execFlag && key != NULL) {
         if (!(value = search_entry(db, key))) {
-            fprintf(stderr, "Failed to find entry\n");
+            fprintf(stderr, "Failed to exec key\n");
             return 1;
         }
 
