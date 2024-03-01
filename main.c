@@ -134,7 +134,7 @@ int main(int argc, char **argv) {
                 return 1;
             }
             value = argv[optind + 1]; // Get the value if provided
-        } else if (!searchFlag && !execFlag) {
+        } else if (!searchFlag && !execFlag && !eraseFlag) {
             // If value is not provided, read from stdin
             stdinFlag = true;
             if (inputFlag) {
