@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     // Flags for operations
     bool appendFlag = false, listFlag = false, eraseFlag = false;
     bool searchFlag = false, execFlag = false, replaceFlag = false;
-    bool inputFlag = false, findFlag = false;
+    bool inputFlag = false, findFlag = false, nanoFlag = false;
     char *key = NULL;
     char *value = NULL;
     int rc;
@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
     int N = 0;
 
     // Use getopt to parse command line options
-    while ((opt = getopt(argc, argv, "scqf:arev:p:l")) != -1) {
+    while ((opt = getopt(argc, argv, "scqf:arev:p:lnh")) != -1) {
         switch (opt) {
             case 's':
                 // Option for showing entries
@@ -100,6 +100,15 @@ int main(int argc, char **argv) {
                 // Option for listing all entries
                 listFlag = true;
                 break;
+            case 'n':
+                // Option for suing nanoID as a key
+                nanoFlag = true;
+                break;
+            case 'h':
+                // Option for showing help
+                print_help(argv[0]);
+                return 1;
+                break;
             default:
                 print_help(argv[0]);
                 return 1;
@@ -111,6 +120,23 @@ int main(int argc, char **argv) {
     if (remaining_args >= 1) {
         key = argv[optind]; // Get the key from the arguments
         if (remaining_args >= 2) {
+            if (inputFlag) {
+                fprintf(stderr, "Value already provided while requesting prompt\n");
+                print_help(argv[0]);
+                return 1;
+            }
+            value = argv[optind + 1]; // Get the value if provided
+        } else if (!searchFlag && !execFlag) {
+            // If value is not provided, read from stdin
+            if (inputFlag) {
+                value = read_stdin("Enter value: ");
+            } else {
+                value = read_stdin(NULL);
+            }
+        }
+    } else if (nanoFlag) {
+        key = safe_simple();
+        if (remaining_args >= 1) {
             if (inputFlag) {
                 fprintf(stderr, "Value already provided while requesting prompt\n");
                 print_help(argv[0]);
@@ -218,6 +244,11 @@ int main(int argc, char **argv) {
         }
     }
     
+    if (nanoFlag) {
+        fprintf(stderr, "NanoID: %s\n", key);
+        free(key);
+    }
+
     if (value) {
         free(value);
     }
@@ -251,7 +282,11 @@ void print_help(char *program) {
     printf("  You can also append a string or password to a vault from stdin\n");
     printf("  printf \"MyPassword\" | %s -a MySecretPassword\n", program);
     printf("  \n");
-    printf("  Run as command : Last but not least you can store short command scripts and execute\n");
+    printf("  Use in authentication script\n");
+    printf("  some_application -username=myuser -password=$(%s -s MySecretPassword)\n", program);
+    printf("  \n");
+    printf("  Run as command : \n");
+    printf("  Last but not least you can store short command scripts and execute\n");
     printf("  the vaulted string content as command(s). This is practical if you need to put commands\n");
     printf("  in scripts that have sensitive strings or passwords in plain text. This will hide those\n");
     printf("  strings or commands from the script.\n");
