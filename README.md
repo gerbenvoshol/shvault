@@ -26,7 +26,7 @@ Options:
   -q             Type vault entry using prompt
   -f             Find and replace for vault templates using the following format find:replace
   -l             List all entries
-  -n             Generate a NanoID thet can be used as key
+  -n             Generate a NanoID which can be used as key
   -k <password>  Provide a new password for the database
   -h             Show this help message
 
