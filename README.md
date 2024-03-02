@@ -1,6 +1,6 @@
 # shvault
 
-CLI secure password vault using SQLcipher
+CLI secure shell/password vault using SQLcipher
 
 # Build & Install
 
